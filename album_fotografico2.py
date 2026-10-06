@@ -7,11 +7,11 @@ def carica_da_file(file_path):
     # TODO
     album={}
     try:
-        file_name= input("enter file name: ")
-        infile=open(file_name,"r")
-        reader_file=csv.reader(infile)
-        for row in reader_file:
-            if not row or len(row<5)
+        with open(file_path) as csvfile:
+            reader=csv.reader(csvfile)
+            header=next(reader) #salta la riga di intestazioe
+        for row in reader:
+            if not row or len(row)<5:
                 continue
             codice=row[0].strip()
             titolo=row[1].strip()
@@ -44,12 +44,11 @@ def aggiungi_foto(album, codice, titolo, autore, mese, anno, file_path):
     # TODO
     if mese <1 or mese > 12:
         return None
-    if FileNotFoundError:
-        return None
+
     for lista_foto in album.values():
-        for foto in lista_foto;
-        if foto["codice"]==codice:
-            return None
+        for foto in lista_foto:
+            if foto["codice"]==codice:
+                return None
     nuova_foto={
         "codice":codice,
         "titolo":titolo,
@@ -57,6 +56,12 @@ def aggiungi_foto(album, codice, titolo, autore, mese, anno, file_path):
         "mese":mese,
         "anno":anno,
     }
+    try:
+        with open(file_path) as csvfile:
+            writer=csv.writer(csvfile)
+            writer.writerow([codice, titolo, autore, mese, anno])
+    except FileNotFoundError:
+        return None
     if anno not in album:
         album[anno]=[]
     album[anno].append(nuova_foto)
@@ -66,9 +71,11 @@ def cerca_foto(album, codice):
     """Cerca una foto nell'album dato il codice"""
     # TODO
     for lista_foto in album.values():
-        if foto in lista_foto:
+        for foto in lista_foto:
             if foto["codice"]==codice:
                 return f"{foto['codice']}, {foto['titolo']}, {foto['autore']}, {foto['mese']}, {foto['anno']}"
+
+    return None
 
 
 def elenco_foto_anno_per_titolo(album, anno):
